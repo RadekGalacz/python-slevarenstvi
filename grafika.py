@@ -33,9 +33,12 @@ label_pomer = Label(root, text='Zadej poměr: ', anchor='w', width=22)
 label_pomer.grid(row=1, column=0)
 
 def pomer_vtokovky():
-    zarez = int(entry_zarez.get())
-    rozvod = int(entry_rozvod.get())
-    lici_kul = int(entry_LK.get())
+    zarez = entry_zarez.get()
+    rozvod = entry_rozvod.get()
+    lici_kul = entry_LK.get()
+    if not entry_zarez.get() or not entry_rozvod.get() or not entry_LK.get():
+        label_vysledek.config(text="Nejprve zadej hmotnost odlitku")
+        return
     if lici_kul >= zarez and rozvod >= zarez:
         vt_soustava = "Přetlaková"
     else:
