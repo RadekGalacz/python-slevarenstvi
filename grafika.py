@@ -1,4 +1,5 @@
 from tkinter import *
+from PIL import Image, ImageTk
 from plocha_zarezu import F_zarezu
 
 root = Tk()
@@ -79,6 +80,14 @@ def urceni_plochy_z():
         
 button = Button(root, text='Urči', command=urceni_plochy_z)
 button.grid(row=2, column=3)
+
+# Obrázek vtokovky
+open_image = Image.open('vtok.png')
+image = open_image.resize((265, 139))
+image = ImageTk.PhotoImage(image)
+
+image_label = Label(root, image=image)
+image_label.grid(row=2, column=6)
 
 # Label - vypsání hmotnosti - plochy zářezů
 label_plocha= Label(root, text = '')
