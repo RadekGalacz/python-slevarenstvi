@@ -1,6 +1,7 @@
 from tkinter import *
 from PIL import Image, ImageTk
 from plocha_zarezu import F_zarezu
+import math
 
 root = Tk()
 root.title('Výpočet vtokových soustav litinových odlitků')
@@ -33,20 +34,27 @@ label_pomer = Label(root, text='Zadej poměr: ', anchor='w', width=22)
 label_pomer.grid(row=1, column=0)
 
 def pomer_vtokovky():
-    zarez = entry_zarez.get()
-    rozvod = entry_rozvod.get()
-    lici_kul = entry_LK.get()
-
-    if not entry_zarez.get() or not entry_rozvod.get() or not entry_LK.get():
-        label_vysledek.config(text="Nejprve zadej poměry vtokové soustavy")
+    try:
+        zarez = float(entry_zarez.get())
+        rozvod = float(entry_rozvod.get())
+        lici_kul = float(entry_LK.get())
+    except ValueError:
+        label_vysledek.config("Chyba", "Zadejte platné číslo")
         return
-    
+
+    # Podmínka pro validní vstupy
+    if zarez <= 0 or rozvod <= 0 or lici_kul <= 0:
+        label_vysledek.config("Chyba", "Zadejte kladné číslo")
+        return
+
+    # Výpočet poměru vtokové soustavy
     if lici_kul >= zarez and rozvod >= zarez:
         vt_soustava = "Přetlaková"
-
     else:
         vt_soustava = "Podtlaková"
-    label_vysledek.config(text=f"{vt_soustava} vtoková sosutava")
+    
+    # Zobrazení výsledku
+    label_vysledek.config(text=f"{vt_soustava} vtoková soustava")
 
 # Tlačítko poměr
 button = Button(root, text='Urči', command=pomer_vtokovky)
@@ -79,7 +87,7 @@ def urceni_plochy_z():
         if hmotnost[0] <= int(hm) <= hmotnost[1]:
             rozvod_vypocet = round((plocha / int(entry_zarez.get()) * int(entry_rozvod.get())), 1)
             lici_kul_vypocet = round((plocha / int(entry_zarez.get()) * int(entry_LK.get())), 1)
-            label_plocha.config(text=f"Pro odlitek z tvárné/šedé litiny použij:\n Sz = {plocha} cm2, Sr = {rozvod_vypocet} cm2, Sk = {lici_kul_vypocet} cm2")
+            label_plocha.config(text=f"Pro odlitek z tvárné/šedé litiny použij:\nSz = {plocha} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
             return
         else:
             label_plocha.config(text=f"Uvedená hmotnost je mimo seznam hodnot")
@@ -124,6 +132,14 @@ entry_c.place(x=272, y=200)
 label_pomer = Label(root, text='Zadej hodnoty podle obrázku: ')
 label_pomer.place(x=0, y=200)
 
+# Label - text, zadej licí čas
+label_pomer = Label(root, text='Zadej licí čas (s): ')
+label_pomer.place(x=0, y=225)
+
+# Entry - licí čas
+entry_t = Entry(root, width=6, justify=CENTER)
+entry_t.place(x=172, y=225)
+
 # Obrázek odlitku
 open_image = Image.open('odlit.png')
 image1 = open_image.resize((265, 139))
@@ -134,19 +150,40 @@ image1_label.place(x=350, y=150)
 
 # Výpočet tlakové výšky H (cm)
 def tlak_vyska():
+    h = entry_h.get()
+    a = entry_a.get()
+    c = entry_c.get()
+    m = entry_hmotnost.get()
+    t = entry_t.get()
+
+    if not entry_h.get() or not entry_a.get() or not entry_c.get() or not entry_hmotnost.get() or not entry_t.get():
+        label_tlak_vyska.config(text="Nejprve zadej hodnoty podle obrázku a ověř,\n že jsi zadal hm. odlitku (kg) a čas lití (s)", justify='left')
+        return
+    
     h = int(entry_h.get())
     a = int(entry_a.get())
     c = int(entry_c.get())
-    H = int((h - (a * a) / (2 * c)) / 10)
-    label_tlak_vyska.config(text=f"Efektivní licí výška H = {H} cm")
+    m = int(entry_hmotnost.get())
+    t = int(entry_t.get())
 
+    H = (h - (a * a) / (2 * c)) / 10
+
+    zarezy = round(22.6 * m / (7 * 0.35 * t * math.sqrt(H)), 1)
+    rozvod_vypocet = round((int(zarezy) / int(entry_zarez.get()) * int(entry_rozvod.get())), 1)
+    lici_kul_vypocet = round((int(zarezy) / int(entry_zarez.get()) * int(entry_LK.get())), 1)
+
+    label_tlak_vyska.config(text=f"Efektivní licí výška H = {H} cm")
+    label_zarezy_vypocet.config(text=f"Dle výpočtu: je\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
 
 button = Button(root, text='Urči', command=tlak_vyska)
-button.place(x=315, y=197)
+button.place(x=315, y=220)
 
 # Label - vypsání tlakové výšky
 label_tlak_vyska= Label(root, text = '')
 label_tlak_vyska.place(x=630, y=200)
 
+# Label - vypsání plochy zářezů z výpočtu
+label_zarezy_vypocet= Label(root, text = '')
+label_zarezy_vypocet.place(x=630, y=225)
 
 root.mainloop()
