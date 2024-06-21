@@ -33,11 +33,18 @@ entry_LK.grid(row=1, column=3)
 label_pomer = Label(root, text='Zadej poměr: ', anchor='w', width=22)
 label_pomer.grid(row=1, column=0)
 
-def get_entry_int(e_item: Entry) -> int | str:
+def get_entry_int(e_item: Entry, label: Label = None) -> int | str:
     try:
         res = int(e_item.get())
     except ValueError as e:
-        label_vysledek.config(text="Zadej celé číslo")
+        label_vysledek.config(text=f"Zadej celé číslo do pole {label.cget('text') if label else ''}")
+        return ""
+    return res
+
+def get_entry_float(e_item: Entry) -> float | str:
+    try:
+        res = float(e_item.get())
+    except ValueError as e:
         return ""
     return res
 
@@ -47,7 +54,7 @@ def pomer_vtokovky():
     lici_kul = entry_LK.get()
 
     if not entry_zarez.get() or not entry_rozvod.get() or not entry_LK.get():
-        label_vysledek.config(text="Nejprve zadej poměry vtokové soustavy")
+        label_vysledek.config(text="Nejprve zadej poměr vtokové soustavy")
         return
     
     if lici_kul >= zarez and rozvod >= zarez:
@@ -76,9 +83,9 @@ entry_hmotnost.grid(row=2, column=2)
 # Tlačítko hmotnost - plocha zářezů
 def urceni_plochy_z():
     hm = entry_hmotnost.get()
-    zarez = float(entry_zarez.get().replace(',', '.'))
-    rozvod = float(entry_rozvod.get().replace(',', '.'))
-    lici_kul = float(entry_LK.get().replace(',', '.'))
+    zarez = get_entry_float(entry_zarez)
+    rozvod = get_entry_float(entry_rozvod)
+    lici_kul = get_entry_float(entry_LK)
 
     if not entry_hmotnost.get():
         label_plocha.config(text="Nejprve zadej hmotnost odlitku")
@@ -138,8 +145,8 @@ label_pomer = Label(root, text='Zadej hodnoty podle obrázku: ')
 label_pomer.place(x=0, y=200)
 
 # Label - text, zadej licí čas
-label_pomer = Label(root, text='Zadej licí čas (s): ')
-label_pomer.place(x=0, y=225)
+label_cas = Label(root, text='Zadej licí čas (s): ')
+label_cas.place(x=0, y=225)
 
 # Entry - licí čas
 entry_t = Entry(root, width=6, justify=CENTER)
@@ -154,30 +161,31 @@ image1_label = Label(root, image=image1)
 image1_label.place(x=350, y=150)  
 
 # Výpočet tlakové výšky H (cm)
-def tlak_vyska():
-    
-    h = get_entry_int(entry_h)
-    a = get_entry_int(entry_a)
-    c = get_entry_int(entry_c)
-    m = get_entry_int(entry_hmotnost)
-    t = get_entry_int(entry_t)
-    if h == "" or a == "" or c == "" or m == "" or t == "":
+def tlak_vyska():    
+    h = get_entry_int(entry_h, label_h)
+    a = get_entry_int(entry_a, label_a)
+    c = get_entry_int(entry_c, label_c)
+    m = get_entry_int(entry_hmotnost, label_pomer)
+    t = get_entry_int(entry_t, label_pomer)
+
+    if h and a and c:
+        H = round((h - (a * a) / (2 * c)) / 10, 1)
+        label_tlak_vyska.config(text=f"Efektivní licí výška H = {H} cm")
+        
+    elif h == "" or a == "" or c == "" or m == "" or t == "":
         label_tlak_vyska.config(text=f"")
         label_zarezy_vypocet.config(text=f"")
-        print("kkt")
         return
-    zarez = float(entry_zarez.get().replace(',', '.'))
-    rozvod = float(entry_rozvod.get().replace(',', '.'))
-    lici_kul = float(entry_LK.get().replace(',', '.'))
+    
+    zarez = get_entry_float(entry_zarez)
+    rozvod = get_entry_float(entry_zarez)
+    lici_kul = get_entry_float(entry_LK)
 
-    H = round((h - (a * a) / (2 * c)) / 10, 1)
-
-    zarezy = round(22.6 * m / (7 * 0.35 * t * math.sqrt(H)), 1)
-    rozvod_vypocet = round((zarezy / zarez * rozvod), 1)
-    lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
-
-    label_tlak_vyska.config(text=f"Efektivní licí výška H = {H} cm")
-    label_zarezy_vypocet.config(text=f"Dle výpočtu je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
+    if m and t and H:
+        zarezy = round(22.6 * m / (7 * 0.35 * t * math.sqrt(H)), 1)
+        rozvod_vypocet = round((zarezy / zarez * rozvod), 1)
+        lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
+        label_zarezy_vypocet.config(text=f"Dle výpočtu ze vzorce je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
 
 
 button = Button(root, text='Urči', command=tlak_vyska)
