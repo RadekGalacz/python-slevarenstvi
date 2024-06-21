@@ -36,11 +36,14 @@ def pomer_vtokovky():
     zarez = entry_zarez.get()
     rozvod = entry_rozvod.get()
     lici_kul = entry_LK.get()
+
     if not entry_zarez.get() or not entry_rozvod.get() or not entry_LK.get():
-        label_vysledek.config(text="Nejprve zadej hmotnost odlitku")
+        label_vysledek.config(text="Nejprve zadej poměry vtokové soustavy")
         return
+    
     if lici_kul >= zarez and rozvod >= zarez:
         vt_soustava = "Přetlaková"
+
     else:
         vt_soustava = "Podtlaková"
     label_vysledek.config(text=f"{vt_soustava} vtoková sosutava")
@@ -128,6 +131,22 @@ image1 = ImageTk.PhotoImage(image1)
 
 image1_label = Label(root, image=image1)
 image1_label.place(x=350, y=150)  
+
+# Výpočet tlakové výšky H (cm)
+def tlak_vyska():
+    h = int(entry_h.get())
+    a = int(entry_a.get())
+    c = int(entry_c.get())
+    H = int((h - (a * a) / (2 * c)) / 10)
+    label_tlak_vyska.config(text=f"Efektivní licí výška H = {H} cm")
+
+
+button = Button(root, text='Urči', command=tlak_vyska)
+button.place(x=315, y=197)
+
+# Label - vypsání tlakové výšky
+label_tlak_vyska= Label(root, text = '')
+label_tlak_vyska.place(x=630, y=200)
 
 
 root.mainloop()
