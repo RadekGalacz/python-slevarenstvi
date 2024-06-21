@@ -73,12 +73,11 @@ label_vysledek = Label(root, text = '')
 label_vysledek.place(x=630, y=40)
 
 # Label - text, zadej hmotnot odlitku
-label_pomer = Label(root, text='Zadej hmotnost odlitku (kg): ')
-label_pomer.grid(row=2, column=0)
+label_hmotnost = Label(root, text='Zadej hmotnost odlitku (kg): ')
+label_hmotnost.grid(row=2, column=0)
 
 entry_hmotnost = Entry(root, width=8, justify=CENTER)
 entry_hmotnost.grid(row=2, column=2)
-
 
 # Tlačítko hmotnost - plocha zářezů
 def urceni_plochy_z():
@@ -161,12 +160,12 @@ image1_label = Label(root, image=image1)
 image1_label.place(x=350, y=150)  
 
 # Výpočet tlakové výšky H (cm)
-def tlak_vyska():    
-    h = get_entry_int(entry_h, label_h)
-    a = get_entry_int(entry_a, label_a)
+def tlak_vyska():
+    m = get_entry_int(entry_hmotnost, label_hmotnost)
+    t = get_entry_int(entry_t, label_cas)    
     c = get_entry_int(entry_c, label_c)
-    m = get_entry_int(entry_hmotnost, label_pomer)
-    t = get_entry_int(entry_t, label_pomer)
+    a = get_entry_int(entry_a, label_a)
+    h = get_entry_int(entry_h, label_h)
 
     if h and a and c:
         H = round((h - (a * a) / (2 * c)) / 10, 1)
@@ -186,7 +185,6 @@ def tlak_vyska():
         rozvod_vypocet = round((zarezy / zarez * rozvod), 1)
         lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
         label_zarezy_vypocet.config(text=f"Dle výpočtu ze vzorce je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
-
 
 button = Button(root, text='Urči', command=tlak_vyska)
 button.place(x=315, y=220)
