@@ -5,7 +5,7 @@ import math
 
 root = Tk()
 root.title('Výpočet vtokových soustav litinových odlitků')
-root.geometry('900x500')
+root.geometry('920x500')
 root.resizable(False, False)
 
 # Zadání poměru zářezů
@@ -152,7 +152,7 @@ def tlak_vyska():
     m = entry_hmotnost.get()
     t = entry_t.get()
 
-    if not entry_h.get() or not entry_a.get() or not entry_c.get() or not entry_hmotnost.get() or not entry_t.get():
+    if not h or not a or not c or not m or not t:
         label_tlak_vyska.config(text="Nejprve zadej hodnoty podle obrázku a ověř,\n že jsi zadal hm. odlitku (kg) a čas lití (s)", justify='left')
         return
     
@@ -161,6 +161,7 @@ def tlak_vyska():
     c = int(entry_c.get())
     m = int(entry_hmotnost.get())
     t = int(entry_t.get())
+    
     zarez = float(entry_zarez.get().replace(',', '.'))
     rozvod = float(entry_rozvod.get().replace(',', '.'))
     lici_kul = float(entry_LK.get().replace(',', '.'))
@@ -172,14 +173,26 @@ def tlak_vyska():
     lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
 
     label_tlak_vyska.config(text=f"Efektivní licí výška H = {H} cm")
-    label_zarezy_vypocet.config(text=f"Dle výpočtu: je\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
+    label_zarezy_vypocet.config(text=f"Dle výpočtu je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
 
 button = Button(root, text='Urči', command=tlak_vyska)
 button.place(x=315, y=220)
 
+# Obrázek vzorce pro výpočet plochy zářezů
+open_image = Image.open('vzorec_plocha.png')
+image2 = open_image.resize((139, 48))
+image2 = ImageTk.PhotoImage(image2)
+
+image_label2 = Label(root, image=image2)
+image_label2.place(x=630, y=150)  
+
 # Label - vypsání tlakové výšky
 label_tlak_vyska= Label(root, text = '')
 label_tlak_vyska.place(x=630, y=200)
+
+# Label - popisek symbolů ke vzorci
+label_vzorec_popis= Label(root, text = '\u03BE - faktor tření kovu 0,35\nt - čas lití (s),\n\u03C1 - hustota (kg/m3)', justify='left')
+label_vzorec_popis.place(x=775, y=150)
 
 # Label - vypsání plochy zářezů z výpočtu
 label_zarezy_vypocet= Label(root, text = '')
