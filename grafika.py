@@ -34,27 +34,20 @@ label_pomer = Label(root, text='Zadej poměr: ', anchor='w', width=22)
 label_pomer.grid(row=1, column=0)
 
 def pomer_vtokovky():
-    try:
-        zarez = float(entry_zarez.get())
-        rozvod = float(entry_rozvod.get())
-        lici_kul = float(entry_LK.get())
-    except ValueError:
-        label_vysledek.config("Chyba", "Zadejte platné číslo")
-        return
+    zarez = entry_zarez.get()
+    rozvod = entry_rozvod.get()
+    lici_kul = entry_LK.get()
 
-    # Podmínka pro validní vstupy
-    if zarez <= 0 or rozvod <= 0 or lici_kul <= 0:
-        label_vysledek.config("Chyba", "Zadejte kladné číslo")
+    if not entry_zarez.get() or not entry_rozvod.get() or not entry_LK.get():
+        label_vysledek.config(text="Nejprve zadej poměry vtokové soustavy")
         return
-
-    # Výpočet poměru vtokové soustavy
+    
     if lici_kul >= zarez and rozvod >= zarez:
         vt_soustava = "Přetlaková"
+
     else:
         vt_soustava = "Podtlaková"
-    
-    # Zobrazení výsledku
-    label_vysledek.config(text=f"{vt_soustava} vtoková soustava")
+    label_vysledek.config(text=f"{vt_soustava} vtoková sosutava")
 
 # Tlačítko poměr
 button = Button(root, text='Urči', command=pomer_vtokovky)
@@ -74,19 +67,22 @@ entry_hmotnost.grid(row=2, column=2)
 # Tlačítko hmotnost - plocha zářezů
 def urceni_plochy_z():
     hm = entry_hmotnost.get()
+    zarez = float(entry_zarez.get().replace(',', '.'))
+    rozvod = float(entry_rozvod.get().replace(',', '.'))
+    lici_kul = float(entry_LK.get().replace(',', '.'))
 
     if not entry_hmotnost.get():
         label_plocha.config(text="Nejprve zadej hmotnost odlitku")
         return
     
-    if not entry_zarez.get() or not entry_rozvod.get() or not entry_LK.get():
+    if not zarez or not rozvod or not lici_kul:
         label_plocha.config(text=f"Nejprve zadej poměr vtokové soustavy")
         return
 
     for hmotnost, plocha in F_zarezu.items():
         if hmotnost[0] <= int(hm) <= hmotnost[1]:
-            rozvod_vypocet = round((plocha / int(entry_zarez.get()) * int(entry_rozvod.get())), 1)
-            lici_kul_vypocet = round((plocha / int(entry_zarez.get()) * int(entry_LK.get())), 1)
+            rozvod_vypocet = round(((plocha / zarez) * rozvod), 1)
+            lici_kul_vypocet = round((((plocha / zarez) * lici_kul)), 1)
             label_plocha.config(text=f"Pro odlitek z tvárné/šedé litiny použij:\nSz = {plocha} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
             return
         else:
@@ -165,12 +161,15 @@ def tlak_vyska():
     c = int(entry_c.get())
     m = int(entry_hmotnost.get())
     t = int(entry_t.get())
+    zarez = float(entry_zarez.get().replace(',', '.'))
+    rozvod = float(entry_rozvod.get().replace(',', '.'))
+    lici_kul = float(entry_LK.get().replace(',', '.'))
 
-    H = (h - (a * a) / (2 * c)) / 10
+    H = round((h - (a * a) / (2 * c)) / 10, 1)
 
     zarezy = round(22.6 * m / (7 * 0.35 * t * math.sqrt(H)), 1)
-    rozvod_vypocet = round((int(zarezy) / int(entry_zarez.get()) * int(entry_rozvod.get())), 1)
-    lici_kul_vypocet = round((int(zarezy) / int(entry_zarez.get()) * int(entry_LK.get())), 1)
+    rozvod_vypocet = round((zarezy / zarez * rozvod), 1)
+    lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
 
     label_tlak_vyska.config(text=f"Efektivní licí výška H = {H} cm")
     label_zarezy_vypocet.config(text=f"Dle výpočtu: je\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
