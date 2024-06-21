@@ -33,6 +33,14 @@ entry_LK.grid(row=1, column=3)
 label_pomer = Label(root, text='Zadej poměr: ', anchor='w', width=22)
 label_pomer.grid(row=1, column=0)
 
+def get_entry_int(e_item: Entry) -> int | str:
+    try:
+        res = int(e_item.get())
+    except ValueError as e:
+        label_vysledek.config(text="Zadej celé číslo")
+        return ""
+    return res
+
 def pomer_vtokovky():
     zarez = entry_zarez.get()
     rozvod = entry_rozvod.get()
@@ -63,6 +71,7 @@ label_pomer.grid(row=2, column=0)
 
 entry_hmotnost = Entry(root, width=8, justify=CENTER)
 entry_hmotnost.grid(row=2, column=2)
+
 
 # Tlačítko hmotnost - plocha zářezů
 def urceni_plochy_z():
@@ -146,22 +155,17 @@ image1_label.place(x=350, y=150)
 
 # Výpočet tlakové výšky H (cm)
 def tlak_vyska():
-    h = entry_h.get()
-    a = entry_a.get()
-    c = entry_c.get()
-    m = entry_hmotnost.get()
-    t = entry_t.get()
-
-    if not h or not a or not c or not m or not t:
-        label_tlak_vyska.config(text="Nejprve zadej hodnoty podle obrázku a ověř,\n že jsi zadal hm. odlitku (kg) a čas lití (s)", justify='left')
+    
+    h = get_entry_int(entry_h)
+    a = get_entry_int(entry_a)
+    c = get_entry_int(entry_c)
+    m = get_entry_int(entry_hmotnost)
+    t = get_entry_int(entry_t)
+    if h == "" or a == "" or c == "" or m == "" or t == "":
+        label_tlak_vyska.config(text=f"")
+        label_zarezy_vypocet.config(text=f"")
+        print("kkt")
         return
-    
-    h = int(entry_h.get())
-    a = int(entry_a.get())
-    c = int(entry_c.get())
-    m = int(entry_hmotnost.get())
-    t = int(entry_t.get())
-    
     zarez = float(entry_zarez.get().replace(',', '.'))
     rozvod = float(entry_rozvod.get().replace(',', '.'))
     lici_kul = float(entry_LK.get().replace(',', '.'))
@@ -174,6 +178,7 @@ def tlak_vyska():
 
     label_tlak_vyska.config(text=f"Efektivní licí výška H = {H} cm")
     label_zarezy_vypocet.config(text=f"Dle výpočtu je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
+
 
 button = Button(root, text='Urči', command=tlak_vyska)
 button.place(x=315, y=220)
@@ -191,7 +196,7 @@ label_tlak_vyska= Label(root, text = '')
 label_tlak_vyska.place(x=630, y=200)
 
 # Label - popisek symbolů ke vzorci
-label_vzorec_popis= Label(root, text = '\u03BE - faktor tření kovu 0,35\nt - čas lití (s),\n\u03C1 - hustota (kg/m3)', justify='left')
+label_vzorec_popis= Label(root, text = '\u03BE - faktor tření kovu 0,35\nt - čas lití (s),\n\u03C1 - hustota kovu (kg/m3)', justify='left')
 label_vzorec_popis.place(x=775, y=150)
 
 # Label - vypsání plochy zářezů z výpočtu
