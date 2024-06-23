@@ -169,7 +169,10 @@ def tlak_vyska():
 
     if h and a and c:
         H = round((h - (a * a) / (2 * c)) / 10, 1)
-        label_tlak_vyska.config(text=f"Efektivní licí výška H = {H} cm")
+        if H > 0:
+            label_tlak_vyska.config(text=f"Efektivní licí výška H = {H} cm")
+        else:
+            label_tlak_vyska.config(text=f"Ověř, že jsi zadal hodnoty 'h' 'a' 'c' správně")
         
     elif h == "" or a == "" or c == "" or m == "" or t == "":
         label_tlak_vyska.config(text=f"")
@@ -199,11 +202,11 @@ image_label2.place(x=630, y=150)
 
 # Label - vypsání tlakové výšky
 label_tlak_vyska= Label(root, text = '')
-label_tlak_vyska.place(x=630, y=200)
+label_tlak_vyska.place(x=630, y=205)
 
 # Label - popisek symbolů ke vzorci
-label_vzorec_popis= Label(root, text = '\u03BE - faktor tření kovu 0,35\nt - čas lití (s),\n\u03C1 - hustota kovu (kg/m3)', justify='left')
-label_vzorec_popis.place(x=775, y=150)
+label_vzorec_popis= Label(root, text = '\u03BE - faktor tření kovu 0,35\nt - čas lití (s),\n\u03C1 - hustota kovu (kg/m3)', justify='left', font=("Helvetica", 10, "italic"))
+label_vzorec_popis.place(x=770, y=148)
 
 # Label - vypsání plochy zářezů z výpočtu
 label_zarezy_vypocet= Label(root, text = '')
