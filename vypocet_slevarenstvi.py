@@ -4,7 +4,7 @@ from plocha_zarezu import F_zarezu
 import math
 
 root = Tk()
-root.title('Výpočet vtokových soustav litinových odlitků')
+root.title('Výpočet vtokových soustav odlitků')
 root.geometry('920x500')
 root.resizable(False, False)
 
@@ -159,6 +159,24 @@ image1 = ImageTk.PhotoImage(image1)
 image1_label = Label(root, image=image1)
 image1_label.place(x=350, y=150)  
 
+# Funkce aktualizuje proměnnou z MenuButton - faktor tření kovu
+def set_option(value):
+    selected_option.set(value)
+    menubutton.config(text=f"\u03BE = {value}")
+
+selected_option = DoubleVar()
+
+# Vytvoření MenuButton - faktor tření kovu
+menubutton = Menubutton(root, text="\u03BE - faktor tření kovu", relief=RAISED, font=("Helvetica", 10, "italic"))
+menubutton.place(x=770, y=142)
+
+menu = Menu(menubutton, tearoff=0)
+menubutton.config(menu=menu)
+
+# Položky v MenuButton - faktor tření kovu
+menu.add_command(label="litina", command=lambda: set_option(0.35))
+menu.add_command(label="ocel nad olitky", command=lambda: set_option(0.4))
+
 # Výpočet tlakové výšky H (cm)
 def tlak_vyska():
     m = get_entry_int(entry_hmotnost, label_hmotnost)
@@ -184,7 +202,7 @@ def tlak_vyska():
     lici_kul = get_entry_float(entry_LK)
 
     if m and t and H:
-        zarezy = round(22.6 * m / (7 * 0.35 * t * math.sqrt(H)), 1)
+        zarezy = round(22.6 * m / (7 * selected_option.get() * t * math.sqrt(H)), 1)
         rozvod_vypocet = round((zarezy / zarez * rozvod), 1)
         lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
         label_zarezy_vypocet.config(text=f"Dle výpočtu ze vzorce je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
@@ -201,12 +219,12 @@ image_label2 = Label(root, image=image2)
 image_label2.place(x=630, y=150)  
 
 # Label - vypsání tlakové výšky
-label_tlak_vyska= Label(root, text = '')
+label_tlak_vyska = Label(root, text = '')
 label_tlak_vyska.place(x=630, y=205)
 
 # Label - popisek symbolů ke vzorci
-label_vzorec_popis= Label(root, text = '\u03BE - faktor tření kovu 0,35\nt - čas lití (s),\n\u03C1 - hustota kovu (kg/m3)', justify='left', font=("Helvetica", 10, "italic"))
-label_vzorec_popis.place(x=770, y=148)
+label_vzorec_popis= Label(root, text = 't - čas lití (s)\n\u03C1 - hustota kovu (kg/m3)', justify='left', font=("Helvetica", 10, "italic"))
+label_vzorec_popis.place(x=774, y=168)
 
 # Label - vypsání plochy zářezů z výpočtu
 label_zarezy_vypocet= Label(root, text = '')
