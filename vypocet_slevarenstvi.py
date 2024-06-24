@@ -5,7 +5,7 @@ import math
 
 root = Tk()
 root.title('Výpočet vtokových soustav odlitků')
-root.geometry('920x500')
+root.geometry('930x500')
 root.resizable(False, False)
 
 # Zadání poměru zářezů
@@ -160,22 +160,41 @@ image1_label = Label(root, image=image1)
 image1_label.place(x=350, y=150)  
 
 # Funkce aktualizuje proměnnou z MenuButton - faktor tření kovu
-def set_option(value):
-    selected_option.set(value)
-    menubutton.config(text=f"\u03BE = {value}")
+def vyber_treni(treni):
+    selected_option.set(treni)
+    menubutton_treni.config(text=f"\u03BE = {treni}")
 
 selected_option = DoubleVar()
 
 # Vytvoření MenuButton - faktor tření kovu
-menubutton = Menubutton(root, text="\u03BE - faktor tření kovu", relief=RAISED, font=("Helvetica", 10, "italic"))
-menubutton.place(x=770, y=142)
+menubutton_treni = Menubutton(root, text="\u03BE - faktor tření kovu", relief=RAISED, font=("Helvetica", 10, "italic"))
+menubutton_treni.place(x=770, y=142)
 
-menu = Menu(menubutton, tearoff=0)
-menubutton.config(menu=menu)
+menu_treni = Menu(menubutton_treni, tearoff=0)
+menubutton_treni.config(menu=menu_treni)
 
 # Položky v MenuButton - faktor tření kovu
-menu.add_command(label="litina", command=lambda: set_option(0.35))
-menu.add_command(label="ocel nad olitky", command=lambda: set_option(0.4))
+menu_treni.add_command(label="litina", command=lambda: vyber_treni(0.35))
+menu_treni.add_command(label="ocel nad olitky", command=lambda: vyber_treni(0.4))
+
+
+# Funkce aktualizuje proměnnou z MenuButton - hustota kovu
+def vyber_hustota(hustota):
+    selected_option_hustota.set(hustota)
+    menubutton_hustota.config(text=f"\u03C1 = {hustota}")
+
+selected_option_hustota = DoubleVar()
+
+# Vytvoření MenuButton - hustota
+menubutton_hustota = Menubutton(root, text="\u03C1 - hust. kovu (kg/dm3)", relief=RAISED, font=("Helvetica", 10, "italic"))
+menubutton_hustota.place(x=770, y=190)
+
+menu_hustota = Menu(menubutton_hustota, tearoff=0)
+menubutton_hustota.config(menu=menu_hustota)
+
+# Položky v MenuButton - hustota
+menu_hustota.add_command(label="litina", command=lambda: vyber_hustota(7.2))
+menu_hustota.add_command(label="ocel nad olitky", command=lambda: vyber_hustota(7.85))
 
 # Výpočet tlakové výšky H (cm)
 def tlak_vyska():
@@ -202,7 +221,7 @@ def tlak_vyska():
     lici_kul = get_entry_float(entry_LK)
 
     if m and t and H:
-        zarezy = round(22.6 * m / (7 * selected_option.get() * t * math.sqrt(H)), 1)
+        zarezy = round((22.6 * m / (selected_option_hustota.get() * selected_option.get() * t * math.sqrt(H))), 1)
         rozvod_vypocet = round((zarezy / zarez * rozvod), 1)
         lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
         label_zarezy_vypocet.config(text=f"Dle výpočtu ze vzorce je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
@@ -223,7 +242,7 @@ label_tlak_vyska = Label(root, text = '')
 label_tlak_vyska.place(x=630, y=205)
 
 # Label - popisek symbolů ke vzorci
-label_vzorec_popis= Label(root, text = 't - čas lití (s)\n\u03C1 - hustota kovu (kg/m3)', justify='left', font=("Helvetica", 10, "italic"))
+label_vzorec_popis= Label(root, text = 't - čas lití (s)', justify='left', font=("Helvetica", 10, "italic"))
 label_vzorec_popis.place(x=774, y=168)
 
 # Label - vypsání plochy zářezů z výpočtu
