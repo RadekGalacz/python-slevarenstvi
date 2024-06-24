@@ -49,11 +49,11 @@ def get_entry_float(e_item: Entry) -> float | str:
     return res
 
 def pomer_vtokovky():
-    zarez = entry_zarez.get()
-    rozvod = entry_rozvod.get()
-    lici_kul = entry_LK.get()
+    zarez = get_entry_float(entry_zarez)
+    rozvod = get_entry_float(entry_rozvod)
+    lici_kul = get_entry_float(entry_LK)
 
-    if not entry_zarez.get() or not entry_rozvod.get() or not entry_LK.get():
+    if not zarez or not rozvod or not lici_kul:
         label_vysledek.config(text="Nejprve zadej poměr vtokové soustavy")
         return
     
@@ -144,12 +144,12 @@ label_pomer = Label(root, text='Zadej hodnoty podle obrázku: ')
 label_pomer.place(x=0, y=200)
 
 # Label - text, zadej licí čas
-label_cas = Label(root, text='Zadej licí čas (s): ')
-label_cas.place(x=0, y=225)
+label_cas = Label(root, text='t - licí čas (s): ', font=("Helvetica", 10, "italic"))
+label_cas.place(x=148, y=250)
 
 # Entry - licí čas
 entry_t = Entry(root, width=6, justify=CENTER)
-entry_t.place(x=172, y=225)
+entry_t.place(x=233, y=252)
 
 # Obrázek odlitku
 open_image = Image.open('odlit.png')
@@ -157,18 +157,18 @@ image1 = open_image.resize((265, 139))
 image1 = ImageTk.PhotoImage(image1)
 
 image1_label = Label(root, image=image1)
-image1_label.place(x=350, y=150)  
+image1_label.place(x=350, y=170)  
 
 # Funkce aktualizuje proměnnou z MenuButton - faktor tření kovu
 def vyber_treni(treni):
-    selected_option.set(treni)
+    selected_option_treni.set(treni)
     menubutton_treni.config(text=f"\u03BE = {treni}")
 
-selected_option = DoubleVar()
+selected_option_treni = DoubleVar()
 
 # Vytvoření MenuButton - faktor tření kovu
 menubutton_treni = Menubutton(root, text="\u03BE - faktor tření kovu", relief=RAISED, font=("Helvetica", 10, "italic"))
-menubutton_treni.place(x=770, y=142)
+menubutton_treni.place(x=145, y=225)
 
 menu_treni = Menu(menubutton_treni, tearoff=0)
 menubutton_treni.config(menu=menu_treni)
@@ -182,12 +182,13 @@ menu_treni.add_command(label="ocel nad olitky", command=lambda: vyber_treni(0.4)
 def vyber_hustota(hustota):
     selected_option_hustota.set(hustota)
     menubutton_hustota.config(text=f"\u03C1 = {hustota}")
+    return selected_option_hustota.get()
 
 selected_option_hustota = DoubleVar()
 
 # Vytvoření MenuButton - hustota
 menubutton_hustota = Menubutton(root, text="\u03C1 - hust. kovu (kg/dm3)", relief=RAISED, font=("Helvetica", 10, "italic"))
-menubutton_hustota.place(x=770, y=190)
+menubutton_hustota.place(x=145, y=273)
 
 menu_hustota = Menu(menubutton_hustota, tearoff=0)
 menubutton_hustota.config(menu=menu_hustota)
@@ -217,12 +218,12 @@ def tlak_vyska():
         return
     
     zarez = get_entry_float(entry_zarez)
-    rozvod = get_entry_float(entry_zarez)
+    rozvod = get_entry_float(entry_rozvod)
     lici_kul = get_entry_float(entry_LK)
 
     if m and t and H:
-        zarezy = round((22.6 * m / (selected_option_hustota.get() * selected_option.get() * t * math.sqrt(H))), 1)
-        rozvod_vypocet = round((zarezy / zarez * rozvod), 1)
+        zarezy = round(22.6 * m / (selected_option_hustota.get() * selected_option_treni.get() * t * math.sqrt(H)), 1)
+        rozvod_vypocet = round(zarezy / zarez * rozvod, 1)
         lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
         label_zarezy_vypocet.config(text=f"Dle výpočtu ze vzorce je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
 
@@ -231,19 +232,15 @@ button.place(x=315, y=220)
 
 # Obrázek vzorce pro výpočet plochy zářezů
 open_image = Image.open('vzorec_plocha.png')
-image2 = open_image.resize((139, 48))
+image2 = open_image.resize((139, 54))
 image2 = ImageTk.PhotoImage(image2)
 
 image_label2 = Label(root, image=image2)
-image_label2.place(x=630, y=150)  
+image_label2.place(x=0, y=230)  
 
 # Label - vypsání tlakové výšky
 label_tlak_vyska = Label(root, text = '')
 label_tlak_vyska.place(x=630, y=205)
-
-# Label - popisek symbolů ke vzorci
-label_vzorec_popis= Label(root, text = 't - čas lití (s)', justify='left', font=("Helvetica", 10, "italic"))
-label_vzorec_popis.place(x=774, y=168)
 
 # Label - vypsání plochy zářezů z výpočtu
 label_zarezy_vypocet= Label(root, text = '')
