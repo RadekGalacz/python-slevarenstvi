@@ -37,7 +37,7 @@ def get_entry_int(e_item: Entry, label: Label = None) -> int | str:
     try:
         res = int(e_item.get())
     except ValueError as e:
-        label_vysledek.config(text=f"Zadej celé číslo do pole {label.cget('text') if label else ''}")
+        label_chyba.config(text=f"Zadej celé číslo do pole {label.cget('text') if label else ''}")
         return ""
     return res
 
@@ -67,6 +67,11 @@ def pomer_vtokovky():
 # Tlačítko poměr
 button = Button(root, text='Urči', command=pomer_vtokovky)
 button.grid(row=1, column=4)
+
+# Label - chyba
+label_chyba = Label(root, text = '')
+label_chyba.place(x=630, y=170)
+
 
 # Label - vypsání poměru vtokové soustavy: podtlak/přetlak
 label_vysledek = Label(root, text = '')
@@ -115,7 +120,7 @@ image_label = Label(root, image=image)
 image_label.place(x=350, y=0)  
 
 # Label - vypsání hmotnosti - plochy zářezů
-label_plocha= Label(root, text = '')
+label_plocha = Label(root, text = '')
 label_plocha.place(x=630, y=60)
 
 # H - výška hladiny nad zářezem
@@ -140,7 +145,7 @@ entry_c = Entry(root, width=6, justify=CENTER)
 entry_c.place(x=272, y=200)
 
 # Label - text, zadej hodnoty podle obrázku
-label_pomer = Label(root, text='Zadej hodnoty podle obrázku: ')
+label_pomer = Label(root, text='Dosaď hodnoty podle obrázku: ')
 label_pomer.place(x=0, y=200)
 
 # Label - text, zadej licí čas
@@ -182,7 +187,6 @@ menu_treni.add_command(label="ocel nad olitky", command=lambda: vyber_treni(0.4)
 def vyber_hustota(hustota):
     selected_option_hustota.set(hustota)
     menubutton_hustota.config(text=f"\u03C1 = {hustota}")
-    return selected_option_hustota.get()
 
 selected_option_hustota = DoubleVar()
 
@@ -220,30 +224,32 @@ def tlak_vyska():
     zarez = get_entry_float(entry_zarez)
     rozvod = get_entry_float(entry_rozvod)
     lici_kul = get_entry_float(entry_LK)
+    hustota = get_entry_float(selected_option_hustota)
+    treni = get_entry_float(selected_option_treni)
 
     if m and t and H:
-        zarezy = round(22.6 * m / (selected_option_hustota.get() * selected_option_treni.get() * t * math.sqrt(H)), 1)
+        zarezy = round(22.6 * m / (hustota * treni * t * math.sqrt(H)), 1)
         rozvod_vypocet = round(zarezy / zarez * rozvod, 1)
         lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
         label_zarezy_vypocet.config(text=f"Dle výpočtu ze vzorce je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
 
 button = Button(root, text='Urči', command=tlak_vyska)
-button.place(x=315, y=220)
+button.place(x=315, y=225)
 
 # Obrázek vzorce pro výpočet plochy zářezů
 open_image = Image.open('vzorec_plocha.png')
 image2 = open_image.resize((139, 54))
 image2 = ImageTk.PhotoImage(image2)
 
-image_label2 = Label(root, image=image2)
-image_label2.place(x=0, y=230)  
+image_labe2 = Label(root, image=image2)
+image_labe2.place(x=0, y=230)  
 
 # Label - vypsání tlakové výšky
 label_tlak_vyska = Label(root, text = '')
 label_tlak_vyska.place(x=630, y=205)
 
 # Label - vypsání plochy zářezů z výpočtu
-label_zarezy_vypocet= Label(root, text = '')
+label_zarezy_vypocet = Label(root, text = '')
 label_zarezy_vypocet.place(x=630, y=225)
 
 root.mainloop()
