@@ -72,7 +72,6 @@ button.grid(row=1, column=4)
 label_chyba = Label(root, text = '')
 label_chyba.place(x=630, y=170)
 
-
 # Label - vypsání poměru vtokové soustavy: podtlak/přetlak
 label_vysledek = Label(root, text = '')
 label_vysledek.place(x=630, y=40)
@@ -228,11 +227,15 @@ def tlak_vyska():
     treni = get_entry_float(selected_option_treni)
 
     if m and t and H:
-        zarezy = round(22.6 * m / (hustota * treni * t * math.sqrt(H)), 1)
-        rozvod_vypocet = round(zarezy / zarez * rozvod, 1)
-        lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
-        label_zarezy_vypocet.config(text=f"Dle výpočtu ze vzorce je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
-
+        if hustota < 0.0000000000000001 or treni < 0.0000000000000001:
+            label_chyba.config(text=f"Vyber z nabídky '\u03BE - tření' a '\u03C1 - hustota'")
+        else:
+            zarezy = round(22.6 * m / (hustota * treni * t * math.sqrt(H)), 1)
+            rozvod_vypocet = round(zarezy / zarez * rozvod, 1)
+            lici_kul_vypocet = round(zarezy / zarez * lici_kul, 1)
+            label_zarezy_vypocet.config(text=f"Dle výpočtu ze vzorce je:\nSz = {zarezy} cm2\nSr = {rozvod_vypocet} cm2\nSk = {lici_kul_vypocet} cm2", justify='left')
+            label_chyba.config(text=f"")
+            
 button = Button(root, text='Urči', command=tlak_vyska)
 button.place(x=315, y=225)
 
